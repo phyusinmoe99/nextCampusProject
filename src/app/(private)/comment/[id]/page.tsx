@@ -1,13 +1,18 @@
 "use client";
 import axios from "@/app/provider/api.provider";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 
 import CommentsCard from "../../../../components/commentsCard";
+import { useState } from "react";
 
 export default function Comment() {
-  
+
+  const queryClient = useQueryClient();
+  const [comment, setComment] = useState('');  
   const { id } = useParams();
+  const post_id = id;
+  
   const getPost = async (id: string) => {
     const responseData = await axios.get(`/posts/${id}/show`);
     console.log(responseData.data.data);
@@ -18,7 +23,17 @@ export default function Comment() {
     queryKey: ["post", id],
     queryFn: () => getPost(id),
   });
-  // console.log(postData);
+
+  const createComment = async ({comment,post_id}) => {
+    const responseData = await axios.post('/commentC',{comment,post_id});
+    return responseData;
+  }
+
+  const { mutate: createCommentMutation } = useMutation({
+    mutationKey: ['createComment'],
+    mutationFn: createComment,
+    onSuccess: ()=> queryClient.invalidateQueries({ queryKey: ['post'] })
+  })
   return (
     <div>
       {postData?.map((post, key) =>
@@ -32,9 +47,11 @@ export default function Comment() {
           id="chat"
           className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Your message..."
-        ></textarea>
+          onChange={(e) => setComment(e.target.value)}
+        >{comment}</textarea>
         <button
           type="submit"
+          onClick={()=> createCommentMutation({comment,post_id})}
           className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
         >
           <svg

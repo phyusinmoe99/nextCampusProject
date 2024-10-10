@@ -13,7 +13,8 @@ export default function PostEdit() {
     
     const { id } = useParams();
     const router = useRouter();
-    console.log('postid',id);
+    console.log('postid', id);
+    
     const getPost = async (id: string) => {
         const responseData = await axios.get(`/posts/${id}/show`);
         console.log('postdata',responseData.data);

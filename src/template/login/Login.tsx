@@ -12,11 +12,6 @@ interface LoginModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
 }
-// export interface responseData {
-//     data: {
-//         token: string;
-//     };
-// }
 export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,11 +19,9 @@ export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
   const router = useRouter();
 
   const login = async ({ email, password }: LoginProps) => {
-    console.log('login function');
 
     try {
       const response = await axios.post("/login", { email, password });
-      console.log('after call');
       return response;
     } catch (error) {
       console.error('Error during login:', error);
@@ -38,7 +31,7 @@ export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
   const {
     mutate: loginMutation,
     isError,
-    data: responseData,
+    
   } = useMutation({
     mutationKey: ["login"],
     mutationFn: login,
@@ -50,6 +43,9 @@ export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
         userData: {
           id: data.data.data.id,
           email: data.data.data.email,
+          role:data.data.data.role
+          
+          
 
         },
       };

@@ -2,7 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faClock } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { Dropdown } from "flowbite-react";
-
+import { useEffect, useState } from "react";
+import Delete from "@/template/postDelete/Delete";
 import axios from "@/app/provider/api.provider";
 
 interface postProps {
@@ -13,10 +14,25 @@ interface postProps {
   created_by?: string;
   date?: string;
   comments?: string;
+  user_id?: string;
 }
 
+const getAuthId = () => {
+  const auth = localStorage.getItem("auth");
+  const parseAuth = JSON.parse(auth);
+  return parseAuth.userData.id;
+};
+
 export default function PostCard({ posts }: { posts: postProps }) {
-  const { id, title, content, image, created_by, date, comments } = posts;
+  const { id, title, content, image, created_by, date, comments, user_id } =
+    posts;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+  console.log("creatId", user_id);
+  console.log("authid", getAuthId());
+  console.log(user_id == getAuthId());
+
   return (
     <div className="max-w-screen-lg mx-auto p-5 sm:p-10 md:p-16">
       <div className="mb-10 rounded overflow-hidden flex flex-col mx-auto">
@@ -46,27 +62,30 @@ export default function PostCard({ posts }: { posts: postProps }) {
               </span>
             </div>
           </div>
-          <div className="flex justify-end px-4 pt-4">
-            <Dropdown inline>
-              <Dropdown.Item>
-                <Link
-                  href={`/post/${id}/edit`}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Edit
-                </Link>
-              </Dropdown.Item>
-
-              <Dropdown.Item>
-                <Link
-                  href="#"
-                  className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                >
-                  Delete
-                </Link>
-              </Dropdown.Item>
-            </Dropdown>
-          </div>
+          {user_id == getAuthId() ? (
+            <div className="flex justify-end px-4 pt-4">
+              <Dropdown inline>
+                <Dropdown.Item>
+                  <Link
+                    href={`/post/${id}/edit`}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Edit
+                  </Link>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <button
+                    onClick={openModal}
+                    className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    Delete
+                  </button>
+                </Dropdown.Item>
+              </Dropdown>
+            </div>
+          ) : (
+            ""
+          )}
         </address>
 
         <h1 className="text-xl sm:text-4xl font-semibold inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2">
@@ -79,7 +98,6 @@ export default function PostCard({ posts }: { posts: postProps }) {
               className="w-full h-full object-cover "
               // src="https://images.pexels.com/photos/5120892/pexels-photo-5120892.jpeg?auto=compress&amp;cs=tinysrgb&amp;fit=crop&amp;h=625.0&amp;sharp=10&amp;w=1500"
               src={image}
-
               alt="Scenic view of Machu Picchu in Peru"
             />
           </div>
@@ -103,7 +121,7 @@ export default function PostCard({ posts }: { posts: postProps }) {
         </Link>
       </button>
 
-     
+      <Delete isModalOpen={isModalOpen} closeModal={closeModal} postId={id} />
     </div>
   );
 }

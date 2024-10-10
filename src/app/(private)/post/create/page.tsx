@@ -18,12 +18,10 @@ export default function PostCreate() {
     const [content, setContent] = useState("");
     const [category, setCategory] = useState("");
     const [image, setImage] = useState<File | null>(null);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
+    const [role, setRole] = useState<string | null>(null);
 
     const router = useRouter();
-
-    const auth = localStorage.getItem("auth");
-    console.log(auth,"authhhhhhhhhhhhhhhhhhhh")
 
 
     const getCategory = async () => {
@@ -36,14 +34,21 @@ export default function PostCreate() {
         queryFn: getCategory,
     });
     const getUserId = () => {
-        const auth = localStorage.getItem('auth');
+        const auth = localStorage.getItem("auth");
         if (auth) {
-
             const parseAuth = JSON.parse(auth);
             return parseAuth.userData.id.toString();
         }
+    };
+    useEffect(() => {
+        const auth = localStorage.getItem("auth");
+        if (auth) {
+            const parseAuth = JSON.parse(auth);
+            setRole(parseAuth.userData.role);
+        }
+    }, []);
 
-    }
+    console.log('role', role);
 
     const createPost = async ({
         title,
@@ -53,24 +58,20 @@ export default function PostCreate() {
         user_id,
     }: postProps) => {
         const formData = new FormData();
-        formData.append('title', title);
-        formData.append('content', content);
-        formData.append('category_id', category_id);
-        formData.append('user_id', user_id);
+        formData.append("title", title);
+        formData.append("content", content);
+        formData.append("category_id", category_id);
+        formData.append("user_id", user_id);
         if (image && image instanceof File) {
-            console.log("Image is valid:", image);  // Check the image object
+            console.log("Image is valid:", image); // Check the image object
 
-            formData.append('image', image);
+            formData.append("image", image);
         } else {
             console.log("No valid image file selected.");
         }
 
-        const response = await axios.post("/posts", formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        console.log('after');
+        const response = await axios.post("/posts", formData);
+        console.log("after");
         return response;
     };
 
@@ -100,31 +101,22 @@ export default function PostCreate() {
             category_id: category,
             user_id: getUserId(),
         });
-        // createPost({title,content,image,category_id:category,user_id:getUserId()});
+    };
 
-    }
-    console.log("Selected image:", image);
 
     return (
-
         <div>
             <h1 className="text-xl text-center font-bold my-8">Create Post</h1>
-            {/* {isError && <div className="max-w-sm mx-auto border border-gray-400 rounded-lg text-center text-red-700 py-2 mb-4">{error}</div>} */}
+
             {isError && (
                 <div className="max-w-sm mx-auto border border-gray-400 rounded-lg text-center text-red-700 py-2 mb-4">
                     {error}
                 </div>
             )}
 
-            <form
-                className="max-w-sm mx-auto"
-                onSubmit={handleSubmit}
-            >
+            <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
                 <div className="mb-5">
-                    <label
-                        for="title"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Post Title
                     </label>
                     <input
@@ -150,31 +142,40 @@ export default function PostCreate() {
                         required
                     />
                 </div>
-                <div className="mb-5 flex justify-between">
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Post Category
-                    </label>
 
-                    <Dropdown>
-                        {allCategory?.map((category, key) => (
-                            <Dropdown.Item key={key}>
-                                <button
-                                    onClick={() => setCategory(category.id)}
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    {category.name}
-                                </button>
-                            </Dropdown.Item>
-                        ))}
-                    </Dropdown>
-                </div>
+                {role === 'admin' && allCategory?.length > 0 && (
+                    <div className="mb-5 flex justify-between">
+                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Post Category
+                        </label>
+
+                        <Dropdown>
+                            {allCategory?.map((category, key) => (
+                                <Dropdown.Item key={key}>
+                                    <button
+                                        onClick={() => setCategory(category.id)}
+                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                        {category.name}
+                                    </button>
+                                </Dropdown.Item>
+                            ))}
+                        </Dropdown>
+                    </div>
+                )}
+
+
 
                 <div>
                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Upload Image
                     </label>
-                    <input type="file" name="image" id="image" onChange={handleImageChange} />
-
+                    <input
+                        type="file"
+                        name="image"
+                        id="image"
+                        onChange={handleImageChange}
+                    />
                 </div>
 
                 <button
@@ -183,7 +184,7 @@ export default function PostCreate() {
                 >
                     Create
                 </button>
-            </form>
-        </div>
+            </form >
+        </div >
     );
 }

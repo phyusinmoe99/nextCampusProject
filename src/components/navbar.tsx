@@ -11,8 +11,9 @@ import Login from "@/template/login/Login";
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
-  // Open and close modal
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -24,6 +25,8 @@ export default function Navbar() {
     if (auth) {
       const parseAuth = JSON.parse(auth);
       setIsLogin(parseAuth.isLogin);
+      setRole(parseAuth.userData.role);
+
     }
   }, [auth]);
 
@@ -63,19 +66,33 @@ export default function Navbar() {
               icon={faDiscord}
               className="text-[#918e8d] w-7 h-7 hover:text-[#206088] cursor-pointer"
             />
-            <div className="flex border rounded-2xl border-[#206088] p-2 ml-2">
+            <div className="flex ">
               {isLogin ? (
-                <div>
-                  <span
-                    onClick={logout}
-                    className="ml-2 font-semibold text-[#206088] cursor-pointer"
-                  >
-                    LogOut
-                  </span>
-                  <span className="ml-2 font-semibold text-[#206088] cursor-pointer">
-                    Profile
-                  </span>
+
+                <div className="flex items-center">
+                  <div>
+                  {role === 'admin' && (
+                    <Link href='/dashboard' className="ml-2 font-semibold text-[#206088] cursor-pointer border rounded-2xl border-[#206088] p-2">
+                      Dashbord
+                    </Link>
+                  )}
+                  </div>
+                  
+                  <div>
+                    <button
+                      onClick={logout}
+                      className="ml-2 font-semibold text-[#206088] cursor-pointer border rounded-2xl border-[#206088] p-2"
+                    >
+                      LogOut
+                    </button>
+                    <Link href='/profile' className="ml-2 font-semibold text-[#206088] cursor-pointer border rounded-2xl border-[#206088] p-2">
+                      Profile
+                    </Link>
+                  </div>
+
                 </div>
+
+
               ) : (
                 <button
                   onClick={openModal}
@@ -89,29 +106,47 @@ export default function Navbar() {
         </div>
 
         {/* Navbar Links */}
-        <div className="flex justify-around py-2 mt-2 ">
-          <Link href="#" className="hover:border-b border-[#206088] text-[#EF9B11]">
-            Home
-          </Link>
-          <Link href="#events" className="hover:border-b border-[#206088] text-[#EF9B11]">
-            Events
-          </Link>
-          <Link href="#programs" className="hover:border-b border-[#206088] text-[#EF9B11]">
-            Program
-          </Link>
-          <Link href="#instructors" className="hover:border-b border-[#206088] text-[#EF9B11]">
-            Instructors
-          </Link>
-          <Link href="#" className="hover:border-b border-[#206088] text-[#EF9B11]">
-            About Us
-          </Link>
-        </div>
+
+        {
+          isLogin ? (
+            <div className="flex justify-around py-2 mt-2 ">
+              <Link href="/" className="hover:border-b border-[#206088] text-[#EF9B11]">
+                Home
+              </Link>
+              <Link href="/post" className="hover:border-b border-[#206088] text-[#EF9B11]">
+                Post
+              </Link>
+              <Link href="/event" className="hover:border-b border-[#206088] text-[#EF9B11]">
+                Events
+              </Link>
+
+            </div>
+
+          ) : (
+            <div className="flex justify-around py-2 mt-2 ">
+              <Link href="/" className="hover:border-b border-[#206088] text-[#EF9B11]">
+                Home
+              </Link>
+              <Link href="#events" className="hover:border-b border-[#206088] text-[#EF9B11]">
+                Events
+              </Link>
+              <Link href="#programs" className="hover:border-b border-[#206088] text-[#EF9B11]">
+                Program
+              </Link>
+              <Link href="#instructors" className="hover:border-b border-[#206088] text-[#EF9B11]">
+                Instructors
+              </Link>
+              <Link href="#" className="hover:border-b border-[#206088] text-[#EF9B11]">
+                About Us
+              </Link>
+            </div>
+          )
+        }
+
+
       </div>
 
-      {/* Content Section */}
-      <div className="pt-24">
-        {/* Your page content goes here */}
-      </div>
+
 
       {/* Login Modal */}
       <Login isModalOpen={isModalOpen} closeModal={closeModal} />

@@ -16,10 +16,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ReactQuery>
-          <Navbar />
-          {children}
-         
-          <Footer/>
+          
+          {children}         
+          
         </ReactQuery>
       </body>
     </html>

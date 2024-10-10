@@ -1,9 +1,9 @@
 'use client';
 import axios from '@/app/provider/api.provider';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import EventsCard from '../components/eventsCard';
-import ProgramsCard from '../components/programsCard';
-import InstructorsCard from '../components/instructorsCard';
+import EventsCard from '../../components/eventsCard';
+import ProgramsCard from '../../components/programsCard';
+import InstructorsCard from '../../components/instructorsCard';
 
 export default function HomePage() {
 
