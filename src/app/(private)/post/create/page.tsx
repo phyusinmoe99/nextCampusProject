@@ -9,15 +9,19 @@ interface postProps {
     title?: string;
     content?: string;
     image?: File | null;
-    category_id?: string;
+    category_id?: number | null;
     user_id?: string;
+    type?: string;
 }
 
 export default function PostCreate() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [category, setCategory] = useState("");
+    const [category, setCategory] = useState<number | null>(null);
+    const [type, setType] = useState("");
     const [image, setImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
     const [error, setError] = useState("");
     const [role, setRole] = useState<string | null>(null);
 
@@ -26,6 +30,7 @@ export default function PostCreate() {
 
     const getCategory = async () => {
         const responseData = await axios.get("/categories");
+      
         return responseData.data.data;
     };
 
@@ -48,30 +53,26 @@ export default function PostCreate() {
         }
     }, []);
 
-    console.log('role', role);
-
     const createPost = async ({
         title,
         content,
         image,
         category_id,
-        user_id,
+        type,
     }: postProps) => {
         const formData = new FormData();
         formData.append("title", title);
         formData.append("content", content);
         formData.append("category_id", category_id);
-        formData.append("user_id", user_id);
+        formData.append("type", type);
+
         if (image && image instanceof File) {
-            console.log("Image is valid:", image); // Check the image object
 
             formData.append("image", image);
         } else {
-            console.log("No valid image file selected.");
         }
 
-        const response = await axios.post("/posts", formData);
-        console.log("after");
+        const response = await axios.post("/posts", formData).catch(res => console.log(res, "........................ddddddddddddddddddddddddddd")); 
         return response;
     };
 
@@ -83,13 +84,23 @@ export default function PostCreate() {
         },
         onError: (error: any) => {
             const errorMessage = error.response?.data?.message;
+
             setError(errorMessage);
         },
     });
     const handleImageChange = (e) => {
         const file = e.target.files ? e.target.files[0] : null;
-        console.log("File selected:", file);
+  
         setImage(file);
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImagePreview(null);
+        }
     };
 
     const handleSubmit = (e) => {
@@ -99,24 +110,28 @@ export default function PostCreate() {
             content,
             image,
             category_id: category,
-            user_id: getUserId(),
+            type,
         });
     };
 
-
     return (
-        <div>
-            <h1 className="text-xl text-center font-bold my-8">Create Post</h1>
+        <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg mt-28">
+            <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+                Create Post
+            </h1>
 
             {isError && (
-                <div className="max-w-sm mx-auto border border-gray-400 rounded-lg text-center text-red-700 py-2 mb-4">
+                <div className="max-w-sm mx-auto bg-red-50 border border-red-400 text-red-700 rounded-lg text-center py-3 mb-4">
                     {error}
                 </div>
             )}
 
-            <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
-                <div className="mb-5">
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                <div>
+                    <label
+                        htmlFor="title"
+                        className="block text-sm font-medium text-gray-700"
+                    >
                         Post Title
                     </label>
                     <input
@@ -124,36 +139,43 @@ export default function PostCreate() {
                         id="title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-                        placeholder="Title"
+                        className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                        placeholder="Enter title"
                         required
                     />
                 </div>
-                <div className="mb-5">
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+
+                <div>
+                    <label
+                        htmlFor="content"
+                        className="block text-sm font-medium text-gray-700"
+                    >
                         Post Content
                     </label>
-                    <input
-                        type="text"
+                    <textarea
                         id="content"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Write the content of your post"
+                        rows="5"
                         required
                     />
                 </div>
 
-                {role === 'admin' && allCategory?.length > 0 && (
-                    <div className="mb-5 flex justify-between">
-                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <label
+                            htmlFor="category"
+                            className="block text-sm font-medium text-gray-700"
+                        >
                             Post Category
                         </label>
-
                         <Dropdown>
                             {allCategory?.map((category, key) => (
                                 <Dropdown.Item key={key}>
                                     <button
-                                        onClick={() => setCategory(category.id)}
+                                        onClick={() => setCategory(parseInt(category.id, 10))}
                                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     >
                                         {category.name}
@@ -162,12 +184,37 @@ export default function PostCreate() {
                             ))}
                         </Dropdown>
                     </div>
-                )}
 
-
+                    {role === "admin" && (
+                        <div>
+                            <label
+                                htmlFor="type"
+                                className="block text-sm font-medium text-gray-700"
+                            >
+                                Post Type
+                            </label>
+                            <select
+                                id="type"
+                                value={type}
+                                onChange={(e) => setType(e.target.value)}
+                                className="w-full py-2 px-4 mt-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none "
+                                required
+                            >
+                                <option value="" disabled>
+                                    Select Type
+                                </option>
+                                <option value="event">Event</option>
+                                <option value="normal">Normal</option>
+                            </select>
+                        </div>
+                    )}
+                </div>
 
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label
+                        htmlFor="image"
+                        className="block text-sm font-medium text-gray-700"
+                    >
                         Upload Image
                     </label>
                     <input
@@ -175,16 +222,26 @@ export default function PostCreate() {
                         name="image"
                         id="image"
                         onChange={handleImageChange}
+                        className="mt-2 text-sm text-gray-500 file:bg-blue-50 file:border file:border-blue-500 file:py-2 file:px-4 file:rounded-lg focus:outline-none"
                     />
+                    {imagePreview && (
+                        <div className="mt-4">
+                            <img
+                                src={imagePreview}
+                                alt="Image Preview"
+                                className="max-w-full h-auto rounded-lg shadow-md"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <button
                     type="submit"
-                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    className="w-full py-3 bg-[#206088] text-white rounded-lg hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-blue-300"
                 >
-                    Create
+                    Create Post
                 </button>
-            </form >
-        </div >
+            </form>
+        </div>
     );
 }

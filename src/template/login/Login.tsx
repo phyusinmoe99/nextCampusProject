@@ -36,29 +36,26 @@ export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
     mutationKey: ["login"],
     mutationFn: login,
     onSuccess: (data) => {
-      console.log(data);
       const auth = {
         isLogin: true,
         token: data.data.data.token,
         userData: {
           id: data.data.data.id,
           email: data.data.data.email,
-          role:data.data.data.role
-          
-          
-
+          role: data.data.data.role,
+          name:data.data.data.name
         },
       };
       localStorage.setItem("auth", JSON.stringify(auth));
       router.push("/post");
       closeModal();
+      setEmail('');
+      setPassword('');
       router.refresh();
-
-
     },
     onError: (error: any) => {
-      const errorMessage = error.response?.data?.message || "Login Error";
-      
+      const errorMessage = error?.response?.message;  
+      console.log('error',error.response)
       setError(errorMessage);
     },
   });
@@ -83,7 +80,7 @@ export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
 
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Login
+              Let's Get You Logged In
               </h3>
               <button
                 type="button"
@@ -130,7 +127,7 @@ export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                    placeholder="name@company.com"
+                    placeholder="name@gmail.com"
                     required
                   />
                 </div>
@@ -148,7 +145,7 @@ export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
                     name="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     required
                   />
                 </div>
@@ -157,7 +154,7 @@ export default function Login({ isModalOpen, closeModal }: LoginModalProps) {
 
                 <button
                   type="submit"
-                  className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="w-full text-white bg-[#206088] hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 >
                   Login
                 </button>

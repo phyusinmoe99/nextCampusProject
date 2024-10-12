@@ -2,11 +2,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faClock } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { Dropdown } from "flowbite-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Delete from "@/template/postDelete/Delete";
-import axios from "@/app/provider/api.provider";
 
-interface postProps {
+export interface postProps {
   id?: string;
   title?: string;
   content?: string;
@@ -29,9 +28,7 @@ export default function PostCard({ posts }: { posts: postProps }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  console.log("creatId", user_id);
-  console.log("authid", getAuthId());
-  console.log(user_id == getAuthId());
+  
 
   return (
     <div className="max-w-screen-lg mx-auto p-5 sm:p-10 md:p-16">
@@ -62,8 +59,8 @@ export default function PostCard({ posts }: { posts: postProps }) {
               </span>
             </div>
           </div>
-          {user_id == getAuthId() ? (
-            <div className="flex justify-end px-4 pt-4">
+          {(user_id === getAuthId() || Number(getAuthId()) === 1) && (
+            <div className="flex justify-end px-4 pt-4 z-50">
               <Dropdown inline>
                 <Dropdown.Item>
                   <Link
@@ -83,8 +80,6 @@ export default function PostCard({ posts }: { posts: postProps }) {
                 </Dropdown.Item>
               </Dropdown>
             </div>
-          ) : (
-            ""
           )}
         </address>
 

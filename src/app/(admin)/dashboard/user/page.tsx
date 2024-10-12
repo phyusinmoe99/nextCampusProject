@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import UserCreate, { userProps } from "@/adminComponents/user/UserCreate";
 
+
+
 export default function User() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState("");
@@ -45,7 +47,7 @@ export default function User() {
     queryFn: getUser,
   });
 
-  const { mutate: getUserMutation } = useMutation({
+  const { mutate: updateUserMutation } = useMutation({
     mutationKey: ["updateUser"],
     mutationFn: updateUser,
   });
@@ -61,7 +63,10 @@ export default function User() {
     const handleDelete = () => {
         
     }
-
+  const save = (user) => {
+      //callapi
+    }
+  
   return (
     <div>
       <div className="text-gray-900 bg-gray-200">
@@ -98,56 +103,7 @@ export default function User() {
                 <th className="text-left p-3 px-5">Actions</th>
               </tr>
               {allUser?.map((user, key) => (
-                <tr
-                  key={user.id}
-                  className="border-b hover:bg-orange-100 bg-gray-100"
-                >
-                  <td className="p-3 px-5">
-                    <input
-                      type="text"
-                      value={user.name}
-                      className="bg-transparent border-0  py-2"
-                    />
-                  </td>
-                  <td className="p-3 px-5">
-                    <input
-                      type="text"
-                      value={user.email}
-                      className="bg-transparent border-0  py-2"
-                    />
-                  </td>
-                  <td className="p-3 px-5">
-                    <select
-                      value={role}
-                      onChange={(e) => {
-                        setRole(e.target.value);
-                      }}
-                      className="bg-transparent border-b-2 border-gray-300 py-2"
-                    >
-                      <option value="" disabled selected>
-                        Select Role
-                      </option>
-
-                      <option value="1">Admin</option>
-                      <option value="2">Faculty</option>
-                      <option value="3">User</option>
-                    </select>
-                  </td>
-                  <td className="p-3 px-5 flex justify-end">
-                    <button
-                      type="button"
-                      className="mr-3 text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      className="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+                <user, onSave = {save}
               ))}
             </tbody>
           </table>

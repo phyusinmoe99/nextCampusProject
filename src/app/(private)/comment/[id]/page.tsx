@@ -12,46 +12,58 @@ export default function Comment() {
   const [comment, setComment] = useState('');  
   const { id } = useParams();
   const post_id = id;
-  
+
+  const commentBlank = () => setComment('');
+  console.log('comment', comment);
   const getPost = async (id: string) => {
     const responseData = await axios.get(`/posts/${id}/show`);
-    console.log(responseData.data.data);
     return responseData.data.data;
   };
-
+  
   const { data: postData } = useQuery({
     queryKey: ["post", id],
     queryFn: () => getPost(id),
   });
 
   const createComment = async ({comment,post_id}) => {
-    const responseData = await axios.post('/commentC',{comment,post_id});
+    const responseData = await axios.post('/commentC', { comment, post_id })
+
     return responseData;
   }
 
   const { mutate: createCommentMutation } = useMutation({
     mutationKey: ['createComment'],
     mutationFn: createComment,
-    onSuccess: ()=> queryClient.invalidateQueries({ queryKey: ['post'] })
+    onSuccess: () => {
+      setComment('')
+      queryClient.invalidateQueries({
+        queryKey: ['post']
+      });
+     
+    }
   })
   return (
-    <div>
+    <div className="mt-40">
       {postData?.map((post, key) =>
         post.comments?.map((comment, key) => (
-          <CommentsCard comments={comment} key={comment.id} />
+          <CommentsCard comments={comment} key={comment.id} postId={post_id} commentBlank= {commentBlank}/>
         ))
       )}
 
       <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 w-1/2 mx-auto">
         <textarea
+          value={comment}
           id="chat"
-          className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
           placeholder="Your message..."
           onChange={(e) => setComment(e.target.value)}
-        >{comment}</textarea>
+        ></textarea>
         <button
           type="submit"
-          onClick={()=> createCommentMutation({comment,post_id})}
+          onClick={() => {
+            createCommentMutation({ comment, post_id });
+            
+          }}
           className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
         >
           <svg

@@ -3,7 +3,7 @@ import { faUser,faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faDiscord, faViber  } from "@fortawesome/free-brands-svg-icons";
 export default function Footer() {
     return (
-        <footer className="bg-gray-900">
+        <footer className="bg-gray-900 mt-72">
             <div className="mx-auto w-full max-w-screen-xl">
                 <div className="grid grid-cols-3 gap-6 px-4 py-6 lg:py-8 ">
                     <div>

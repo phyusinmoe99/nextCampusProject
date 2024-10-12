@@ -14,7 +14,6 @@ const instance = axios.create({
   });
 
 instance.interceptors.request.use((config) => {
-    console.log("Request Config:", config);
     
     if (!(config.data instanceof FormData)) {
         config.headers['Content-Type'] = "application/json";
@@ -23,14 +22,10 @@ instance.interceptors.request.use((config) => {
     const auth = localStorage.getItem('auth');
     if (auth) {
         const parseAuth = JSON.parse(auth);
-        console.log(parseAuth.token);
         if (parseAuth.token) {
             config.headers.Authorization = `Bearer ${parseAuth.token}`;
         }
     }
-
-
-
     return config;
 })
 
