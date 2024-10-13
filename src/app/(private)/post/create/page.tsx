@@ -1,12 +1,9 @@
 "use client";
-import axiosD from "@/app/provider/api.provider";
+import axios from "@/app/provider/api.provider";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Dropdown } from "flowbite-react";
-
-import axios from "axios";
-
 
 interface postProps {
     title?: string;
@@ -21,7 +18,8 @@ export default function PostCreate() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [category, setCategory] = useState<number | null>(null);
-    const [type, setType] = useState("");
+    const [categoryName, setCategoryName] = useState('');
+    const [type, setType] = useState<string | null>(null);
     const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [error, setError] = useState("");
@@ -29,7 +27,7 @@ export default function PostCreate() {
 
     const router = useRouter();
     const getCategory = async () => {
-        const responseData = await axiosD.get("/categories");      
+        const responseData = await axios.get("/categories");      
         return responseData.data.data;
     };
 
@@ -63,7 +61,10 @@ export default function PostCreate() {
         formData.append("title", title);
         formData.append("content", content);
         formData.append("category_id", category_id);
-        formData.append("type", type);
+
+        if (type) {
+            formData.append("type", type);
+        }
 
         if (image && image instanceof File) {
 
@@ -83,7 +84,6 @@ export default function PostCreate() {
         },
         onError: (error: any) => {
             const errorMessage = error.response?.data?.message;
-
             setError(errorMessage);
         },
     });
@@ -166,16 +166,21 @@ export default function PostCreate() {
                     <div>
                         <label
                             htmlFor="category"
-                            className="block text-sm font-medium text-gray-700"
+                            className="block text-sm font-medium text-gray-700 mb-2"
                         >
                             Post Category
                         </label>
-                        <Dropdown>
+                        <Dropdown inline label={categoryName ? categoryName : 'Select Category'} >
                             {allCategory?.map((category, key) => (
                                 <Dropdown.Item key={key}>
                                     <button
-                                        onClick={() => setCategory(parseInt(category.id, 10))}
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        onClick={() =>{
+                                            setCategory(parseInt(category.id, 10));
+                                            setCategoryName(category.name);
+
+                                        }
+                                        }
+                                        className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     >
                                         {category.name}
                                     </button>

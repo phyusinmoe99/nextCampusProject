@@ -10,15 +10,13 @@ import TableRow from "./tableRow";
 
 export default function User() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-
   const router = useRouter();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   const getAllUsers = async () => {
-    const response = await axios.get("/teachers");
+    const response = await axios.get("/user");
     return response.data.data;
   };
 
@@ -27,7 +25,7 @@ export default function User() {
   //   return response.data;
   // };
 
-  const updateUser = async ({ name, email, role,phone,address }:userProps) => {
+  const updateUser = async ({ name, email, role_id,phone,address }:userProps) => {
     const response = await axios.post("", { name, email, role,phone,address });
     return response.data;
   };

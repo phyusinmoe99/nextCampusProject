@@ -22,7 +22,7 @@ export default function EventsCard({ events}:{events:eventsProps[]}) {
                                     <div
                                         className="w-full h-44 cursor-pointer border rounded-md text-center"
                                         style={{
-                                            backgroundImage: `url("https://flowbite.com/docs/images/people/profile-picture-2.jpg")`,
+                                            backgroundImage:`url(${event.image})`,
                                             backgroundSize: "cover",
                                             backgroundPosition: "center",
                                         }}
