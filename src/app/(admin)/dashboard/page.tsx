@@ -32,8 +32,18 @@ export default function Dashboard() {
     queryFn: getAllPosts,
   });
 
+  const getAllUsers = async () => {
+    const response = await axios.get("/user");
+    return response.data.data;
+  };
+  const { data: allUser } = useQuery({
+    queryKey: ["allUser"],
+    queryFn: getAllUsers,
+  });
+
   const totalPrograms = programs?.length || 0;
   const totalPost = allPostData?.length || 0;
+  const totalUsers = allUser?.length || 0;
   return (
     <div className="py-6 px-4">
       <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
@@ -61,7 +71,7 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center justify-between mt-4">
-              <div className="text-3xl font-bold text-gray-800">12,345</div>
+              <div className="text-3xl font-bold text-gray-800">{ totalUsers}</div>
             </div>
           </div>
         </div>

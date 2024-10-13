@@ -88,9 +88,9 @@ export default function PostCard({ posts }: { posts: postProps }) {
         </h1>
         {/* contentImage */}
         <div className="relative">
-          <div className="w-full h-52 overflow-hidden">
+          <div className="w-full h-96 overflow-hidden">
             <img
-              className="w-full h-full object-cover "
+              className="w-full h-full object-cover"
               // src="https://images.pexels.com/photos/5120892/pexels-photo-5120892.jpeg?auto=compress&amp;cs=tinysrgb&amp;fit=crop&amp;h=625.0&amp;sharp=10&amp;w=1500"
               src={image}
               alt="Scenic view of Machu Picchu in Peru"

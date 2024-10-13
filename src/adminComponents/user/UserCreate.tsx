@@ -1,6 +1,6 @@
 "use client";
 import axios from "@/app/provider/api.provider";
-import { useMutation } from "@tanstack/react-query";
+import {useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 interface LoginModalProps {
   isModalOpen: boolean;
@@ -13,7 +13,7 @@ export interface userProps {
   password?: string;
   phone?: string;
   address?: string;
-  role?: string;
+  role_id?: string;
 }
 
 export default function UserCreate({
@@ -25,8 +25,9 @@ export default function UserCreate({
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [role, setRole] = useState("");
+  const [role_id, setRole] = useState("");
   const [error, setError] = useState("");
+  const queryClient = useQueryClient();
 
   const createUser = async ({
     name,
@@ -34,16 +35,15 @@ export default function UserCreate({
     password,
     phone,
     address,
-    role,
+    role_id,
   }: userProps) => {
-    console.log("Request Payload:", { name, email, password, phone, address, role });
-    const response = await axios.post("/users/register", {
+    const response = await axios.post("/register", {
       name,
       email,
       password,
       phone,
       address,
-      role,
+      role_id,
     });
     return response.data;
   };
@@ -56,13 +56,19 @@ export default function UserCreate({
         error.response?.data?.message || "Registration Error";
       setError(errorMessage);
     },
+    onSuccess: () => {
+      closeModal();
+      queryClient.invalidateQueries({
+        queryKey:['allUser']
+      })
+    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Selected Role:", role);
-    createUserMutation({ name, email, password, phone, address, role });
+    createUserMutation({ name, email, password, phone, address, role_id });
   };
+
 
   return (
     <div>
@@ -182,7 +188,7 @@ export default function UserCreate({
                   <select
                     id="role"
                     name="role"
-                    value={role}
+                    value={role_id}
                     onChange={(e) => setRole(e.target.value)}
                     className="block w-full p-3 text-gray-900 bg-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                     required

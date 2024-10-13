@@ -4,13 +4,13 @@ import { userProps } from "@/adminComponents/user/UserCreate";
 import { useState } from "react";
 
 export default function TableRow({ user, update }: { user: userProps; update: (user: userProps) => void }) {
-  const { id, name, email, phone, address, role } = user;
+  const { id, name, email, phone, address, role_id } = user;
   
   const [editName, setEditName] = useState(name);
   const [editEmail, setEditEmail] = useState(email);
   const [editPhone, setEditPhone] = useState(phone);
   const [editAddress, setEditAddress] = useState(address);
-  const [editRole, setEditRole] = useState(role);
+  const [editRole, setEditRole] = useState(role_id);
 
   const handleUpdate = () => {
     update({
@@ -19,7 +19,7 @@ export default function TableRow({ user, update }: { user: userProps; update: (u
       email: editEmail,
       phone: editPhone,
       address: editAddress,
-      role: editRole
+      role_id: editRole
     });
   };
 
