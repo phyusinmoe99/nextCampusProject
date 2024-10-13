@@ -1,9 +1,12 @@
 "use client";
-import axios from "@/app/provider/api.provider";
+import axiosD from "@/app/provider/api.provider";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Dropdown } from "flowbite-react";
+
+import axios from "axios";
+
 
 interface postProps {
     title?: string;
@@ -21,16 +24,12 @@ export default function PostCreate() {
     const [type, setType] = useState("");
     const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-
     const [error, setError] = useState("");
     const [role, setRole] = useState<string | null>(null);
 
     const router = useRouter();
-
-
     const getCategory = async () => {
-        const responseData = await axios.get("/categories");
-      
+        const responseData = await axiosD.get("/categories");      
         return responseData.data.data;
     };
 

@@ -30,11 +30,11 @@ export default function Navbar() {
     }
   }, [auth]);
 
-  const logout = () => {
+   function logout() {
     localStorage.removeItem("auth");
     setIsLogin(false);
     router.push("/");
-  };
+  }
 
   return (
     <>
@@ -44,10 +44,10 @@ export default function Navbar() {
           <div className="flex items-center mt-4">
             <div className="">
               <Image
-                src="/logo.png"
+                src="/logo1.png"
                 alt="Talent Logo"
-                width={100}
-                height={100}
+                width={50}
+                height={40}
                 // className="object-cover w-full h-full"
               />
             </div>

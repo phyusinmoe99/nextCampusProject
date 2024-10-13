@@ -15,9 +15,9 @@ const instance = axios.create({
 
 instance.interceptors.request.use((config) => {
     
-    if (!(config.data instanceof FormData)) {
-        config.headers['Content-Type'] = "application/json";
-    }
+    // if (!(config.data instanceof FormData)) {
+    //     config.headers['Content-Type'] = "application/json";
+    // }
 
     const auth = localStorage.getItem('auth');
     if (auth) {
@@ -29,6 +29,14 @@ instance.interceptors.request.use((config) => {
     return config;
 })
 
+instance.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
 
 
 

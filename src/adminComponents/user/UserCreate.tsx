@@ -1,13 +1,13 @@
 "use client";
 import axios from "@/app/provider/api.provider";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 interface LoginModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
 }
 export interface userProps {
+  id?: string;
   name?: string;
   email?: string;
   password?: string;
@@ -36,7 +36,7 @@ export default function UserCreate({
     address,
     role,
   }: userProps) => {
-    console.log("request", { name, email, password, phone, address, role });
+    console.log("Request Payload:", { name, email, password, phone, address, role });
     const response = await axios.post("/users/register", {
       name,
       email,
@@ -59,13 +59,11 @@ export default function UserCreate({
   });
 
   const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-  console.log("Selected Role:", role);
-      
-    createUserMutation({ name, email, password, role, phone, address });
+    e.preventDefault();
+    console.log("Selected Role:", role);
+    createUserMutation({ name, email, password, phone, address, role });
   };
 
-    
   return (
     <div>
       {isModalOpen && (
@@ -74,20 +72,21 @@ export default function UserCreate({
           onClick={closeModal}
         >
           <div
-            className="relative p-4 w-full max-w-xl max-h-full bg-white rounded-lg shadow dark:bg-gray-700 overflow-scroll"
+            className="relative p-8 w-full max-w-xl bg-white rounded-xl shadow-lg dark:bg-gray-800 overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                User Register
+                User Registration
               </h3>
               <button
                 type="button"
-                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8"
+                className="text-gray-400 hover:text-gray-600"
                 onClick={closeModal}
               >
                 <svg
-                  className="w-3 h-3"
+                  className="w-4 h-4"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -95,23 +94,26 @@ export default function UserCreate({
                 >
                   <path
                     stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M1 1l6 6m0 0l6 6M7 7l6-6M7 7l-6 6"
                   />
                 </svg>
               </button>
             </div>
 
-            <div className="p-4 md:p-5 " >
+            {/* Modal Body */}
+            <div>
               {isError && (
-                <div className="max-w-sm mx-auto border border-gray-400 rounded-lg text-center text-red-700 py-2 mb-4 break-all">
+                <div className="mb-4 p-4 text-red-700 border border-red-400 rounded-lg bg-red-50">
                   {error}
                 </div>
               )}
-              <form className="space-y-4 ">
-                <div className="grid grid-cols-2 ">
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Name & Email */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label
                       htmlFor="name"
@@ -125,8 +127,8 @@ export default function UserCreate({
                       name="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                      placeholder="name"
+                      className="block w-full p-3 text-gray-900 bg-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter your name"
                       required
                     />
                   </div>
@@ -143,56 +145,65 @@ export default function UserCreate({
                       name="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                      placeholder="name@company.com"
+                      className="block w-full p-3 text-gray-900 bg-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="you@example.com"
                       required
                     />
                   </div>
+                </div>
 
-                  <div>
-                    <label
-                      htmlFor="password"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Your password
-                    </label>
-                    <input
-                      type="password"
-                      id="password"
-                      name="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                      required
-                    />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <label
-                      htmlFor="role"
-                      className="block mb-2 text-sm font-medium text-gray-900"
-                    >
-                      Role
-                    </label>
-                    <select
-                      value={role}
-                      onChange={(e) => {
-                        setRole(e.target.value);
-                      }}
-                      className="bg-transparent border-b-2 border-gray-300 py-2"
-                                      >
-                      <option value="" disabled selected>Select Role</option>
-                                          
-                      <option value="1">Admin</option>
-                      <option value="2">Faculty</option>
-                      <option value="3">User</option>
-                    </select>
-                  </div>
+                {/* Password */}
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="block w-full p-3 text-gray-900 bg-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                {/* Role Selector */}
+                <div>
+                  <label
+                    htmlFor="role"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Role
+                  </label>
+                  <select
+                    id="role"
+                    name="role"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="block w-full p-3 text-gray-900 bg-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="" disabled>
+                      Select Role
+                    </option>
+                    <option value="1">Admin</option>
+                    <option value="2">Faculty</option>
+                    <option value="3">User</option>
+                  </select>
+                </div>
+
+                {/* Phone & Address */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label
                       htmlFor="phone"
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      PhoneNumber
+                      Phone
                     </label>
                     <input
                       type="text"
@@ -200,36 +211,35 @@ export default function UserCreate({
                       name="phone"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                      placeholder="pnone number"
+                      className="block w-full p-3 text-gray-900 bg-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter your phone"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="address"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Address
+                    </label>
+                    <input
+                      type="text"
+                      id="address"
+                      name="address"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      className="block w-full p-3 text-gray-900 bg-gray-100 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter your address"
                       required
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="address"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    placeholder="Address"
-                    required
-                  />
-                </div>
-
+                {/* Submit Button */}
                 <button
                   type="submit"
-                  onClick={handleSubmit}
-                  className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-3"
                 >
                   Register
                 </button>
